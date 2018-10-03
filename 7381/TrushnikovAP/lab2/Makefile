@@ -1,3 +1,7 @@
+OBJ = Source/main.o Source/header.o Source/lisp.o
+
+
+
 all: lab2
 
 lab2: Source/main.o Source/header.o Source/lisp.o
@@ -13,4 +17,4 @@ lisp.o: Source/lisp.cpp
 	g++ -c lisp.cpp
 
 clean:
-	rm -f $(binaries) *.o
+	rm $(OBJ)

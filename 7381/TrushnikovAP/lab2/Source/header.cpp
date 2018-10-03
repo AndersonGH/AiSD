@@ -34,14 +34,14 @@ void syntax_check(class Lisp_Node *node,bool &check){
         return;
 
     if(node->is_pair(node)){
-        std::cout << "is pair" << std::endl;
+        std::cout<< "is pair" << std::endl;
     }
     else if(node->isAtom_num(node)){
-        std::cout << "atom: " << node->s.num << std::endl;
+        std::cout<< "atom: " << node->s.num << std::endl;
 
     }
     else if(node->isAtom_sign(node)){
-        std::cout << "atom: " << node->s.sign << std::endl;
+        std::cout<< "atom: " << node->s.sign << std::endl;
         if(node->s.sign == '/')
             if(node->right!=NULL && node->right->isAtom_num(node->right))
                 if(node->right->s.num == 0)
@@ -50,9 +50,11 @@ void syntax_check(class Lisp_Node *node,bool &check){
     }
 
     if(node->is_pair(node) && node->s.bottom!=NULL)
-        if(node->s.bottom->isAtom_num(node->s.bottom))
-            check = false;
-            //return;
+        if(!node->s.bottom->is_Nill(node->s.bottom))
+            if(node->s.bottom->isAtom_num(node->s.bottom))
+                check = false;
+
+
 
     syntax_check(node->s.bottom,check);
     syntax_check(node->right,check);
@@ -73,59 +75,16 @@ bool paste_node(class Lisp_Node *pred,class Lisp_Node *paste){
 
 }
 
-
-bool create_lisp(int len,char **in,class Lisp &lisp){
-    char ch=' ';
-    int i = len-1;
-    int level = 0;
-    std:: stack <class Lisp_Node *> fathers;
-
-    while(1){
-        ch=' ';
-        while(i>0){
-
-            ch = in[i][0];
-            i--;
-            break;
-        }
-        if(i==0)
-            break;
-
-        class Lisp_Node * father;
-        if(i==len-2){
-            class Lisp_Node * node = new Lisp_Node;
-            node->atom(node);
-            lisp.root = node;
-            level++;
-            fathers.push(node);
-            continue;
-
-        }
-
-        else
-            father = fathers.top();
-
-
-
-
-        if(ch==')' || ch == '(')
-            create_temp(ch,fathers,level,father);
-        else if(isdigit(ch)){
-            int num = atoi(in[i+1]);
-            insert_atom_num(father,num);
-        }
-        else if(isSign(ch))
-            insert_atom_sign(father,ch);
-
-    }
-
-
+bool insert_nill(class Lisp_Node *father){
+    class Lisp_Node *node = new Lisp_Node;
+    node->Nill(node);
+    father = node;
     return true;
 }
 
 bool insert_atom_sign(class Lisp_Node *father,char sign){
 
-    if(father->isEmptyAtom(father))
+    if(father->isEmptyAtom(father) && !father->is_Nill(father))
         father->atom_sign(father,sign);
     else{
         while(father->right!=NULL)
@@ -141,7 +100,7 @@ bool insert_atom_sign(class Lisp_Node *father,char sign){
 
 bool insert_atom_num(class Lisp_Node *father,int num){
 
-    if(father->isEmptyAtom(father))
+    if(father->isEmptyAtom(father) && !father->is_Nill(father))
         father->atom_num(father,num);
 
     else{
@@ -156,7 +115,7 @@ bool insert_atom_num(class Lisp_Node *father,int num){
     return true;
 }
 
-bool create_temp(char ch,std:: stack <class Lisp_Node *> &fathers,int &level,class Lisp_Node *father){
+bool create_temp(char ch,std::stack <class Lisp_Node *> &fathers,int &level,class Lisp_Node *father){
 
 
     if(ch == ')'){
@@ -193,7 +152,7 @@ bool create_temp(char ch,std:: stack <class Lisp_Node *> &fathers,int &level,cla
     else{
 
 
-        if(level - 1 !=0){
+        if(level - 1 !=0 && !father->is_Nill(father)){
             int j = level -1;
             while(j>0){
                 fathers.pop();
@@ -258,12 +217,12 @@ bool input(int argc, char* argv[], std:: stack <char> &brackets,char **in,int &l
     char ch;
        for(int i=1; i < argc; i++){
            ch= *argv[i];
-		   
+
            if(ch == '('){
-					
+
                     check_for_brackets=false;
                     brackets.push('(');
-					
+
                 }
             else if(ch == ')'){
                 if(brackets.empty()){
@@ -271,7 +230,7 @@ bool input(int argc, char* argv[], std:: stack <char> &brackets,char **in,int &l
                 }
                 if(brackets.top() == '(')
                     brackets.pop();
-				
+
             }
 
      }
@@ -337,6 +296,9 @@ bool input(int argc, char* argv[], std:: stack <char> &brackets,char **in,int &l
                 i++;
 
                 if(std::cin.peek() == '\n'){
+                    if(!brackets.empty()){
+                        return false;
+                    }
                     len = i;
                     break;
                 }

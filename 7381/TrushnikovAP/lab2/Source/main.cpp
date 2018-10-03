@@ -7,7 +7,7 @@ int main(int argc, char* argv[]){
 
     Lisp lisp;
     int len_in=30;
-    std:: stack <char> Stack;
+    std::stack <char> Stack;
 
     if(argc>1)
         len_in=argc;
@@ -15,21 +15,14 @@ int main(int argc, char* argv[]){
     char *in[len_in];
 
 
-    if(!input(argc,argv,Stack,in,len_in))
-        std::cout <<"Oshibka skobok. " ;
+    if(!input(argc,argv,Stack,in,len_in)) // функция считывания данных
+        std::cout <<"Oshibka skobok."<< std::endl;  // вернет false при неправильной расстановке скобок
     else{
-        //for(int i = 1;i<len_in;i++)
-            //std::cout << in[i] << std::endl;
-
-
-        create_lisp(len_in,in,lisp);
-
-
+        lisp.create_lisp(len_in,in,lisp); // метод класса lisp для создания иерархического списка
         bool check = true;
         if(lisp.root->isAtom_num(lisp.root)){
                 std::cout << "Incorrect expression" << std::endl;
         }
-
         else{
             syntax_check(lisp.root,check);
         }
@@ -39,12 +32,6 @@ int main(int argc, char* argv[]){
             std::cout << "Incorrect expression" << std::endl;
 
     }
-
-    /*
-    for(int i = 1;i<len_in;i++)
-        std::cout << in[i] << std::endl;
-    */
-
 
     return 0;
 }
