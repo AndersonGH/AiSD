@@ -1,10 +1,15 @@
 #include <iostream>
+#include <stack>
 #ifndef LISP_H
 #define LISP_H
 class Lisp{
 public:
     class Lisp_Node *root;
     bool create_lisp(int len,char **in,class Lisp &lisp);
+    bool insert_atom_num(class Lisp_Node *father,int num);
+    bool create_temp(char ch,std::stack <class Lisp_Node *> &fathers,int &level,class Lisp_Node *father);
+    bool insert_atom_sign(class Lisp_Node *father,char sign);
+    bool insert_nill(class Lisp_Node *father);
 };
 
 class Lisp_Node{
