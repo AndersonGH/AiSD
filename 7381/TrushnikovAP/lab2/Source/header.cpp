@@ -36,6 +36,10 @@ void syntax_check(class Lisp_Node *node,bool &check){
     if(node->is_pair(node) && !node->is_Nill(node)){
         std::cout<< "is pair" << std::endl;
     }
+    else if(node->is_Nill(node)){
+        std::cout<< "Nill "<< std::endl;
+
+    }
     else if(node->isAtom_num(node)){
         std::cout<< "atom: " << node->s.num << std::endl;
 
@@ -51,8 +55,15 @@ void syntax_check(class Lisp_Node *node,bool &check){
 
     if(node->is_pair(node) && node->s.bottom!=NULL){
         if(node->s.bottom->is_Nill(node->s.bottom)){
-            if(node->s.bottom->right!=NULL)
-                if(node->s.bottom->right->isAtom_num(node->s.bottom->right))
+            Lisp_Node * nill;
+            nill = node->s.bottom;
+            if(nill->right !=NULL)
+                while(nill->right->is_Nill(nill->right))
+                    nill=nill->right;
+
+
+            if(nill->right!=NULL)
+                if(nill->right->isAtom_num(nill->right))
                     check = false;
         }
         else{
@@ -86,9 +97,18 @@ bool paste_node(class Lisp_Node *pred,class Lisp_Node *paste){
 }
 
 bool insert_nill(class Lisp_Node *father){
-    class Lisp_Node *node = new Lisp_Node;
-    node->Nill(node);
-    father = node;
+
+    if(father->isEmptyAtom(father) && !father->is_Nill(father))
+        father->Nill(father);
+    else{
+        while(father->right!=NULL)
+            father=father->right;
+
+        class Lisp_Node *node = new Lisp_Node;
+        node->Nill(node);
+        father->right=node;
+
+    }
     return true;
 }
 
