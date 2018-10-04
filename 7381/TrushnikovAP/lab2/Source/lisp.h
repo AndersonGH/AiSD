@@ -26,7 +26,6 @@ public:
         class Lisp_Node *bottom;
         bool sign_check;//true sign, false num
         bool empty; // true empty
-        bool Nill;// true Nill
         int num;
         char sign;
 

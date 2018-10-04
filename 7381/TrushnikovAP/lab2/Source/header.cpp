@@ -33,7 +33,7 @@ void syntax_check(class Lisp_Node *node,bool &check){
     if(node == NULL)
         return;
 
-    if(node->is_pair(node)){
+    if(node->is_pair(node) && !node->is_Nill(node)){
         std::cout<< "is pair" << std::endl;
     }
     else if(node->isAtom_num(node)){
@@ -49,10 +49,20 @@ void syntax_check(class Lisp_Node *node,bool &check){
 
     }
 
-    if(node->is_pair(node) && node->s.bottom!=NULL)
-        if(!node->s.bottom->is_Nill(node->s.bottom))
+    if(node->is_pair(node) && node->s.bottom!=NULL){
+        if(node->s.bottom->is_Nill(node->s.bottom)){
+            if(node->s.bottom->right!=NULL)
+                if(node->s.bottom->right->isAtom_num(node->s.bottom->right))
+                    check = false;
+        }
+        else{
             if(node->s.bottom->isAtom_num(node->s.bottom))
                 check = false;
+        }
+
+
+
+    }
 
 
 

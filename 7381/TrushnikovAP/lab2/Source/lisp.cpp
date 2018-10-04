@@ -33,8 +33,10 @@ bool Lisp::create_lisp(int len,char **in,class Lisp &lisp){
         else
             father = fathers.top();
 
-        if(in[i][0] =='(' && ch == ')')
+        if(in[i][0] =='(' && ch == ')'){
+            i--;
             insert_nill(father);
+        }
         else if(ch==')' || ch == '('){
             create_temp(ch,fathers,level,father);
         }
@@ -60,6 +62,7 @@ bool Lisp::create_lisp(int len,char **in,class Lisp &lisp){
 
 bool Lisp_Node::creat_pair(Lisp_Node *s){
     s->s.tag = false;
+    s->s.empty = false;
     s->right=NULL;
     s->s.bottom=NULL;
     return true;
@@ -73,11 +76,16 @@ bool Lisp_Node::is_pair(Lisp_Node *s){
 
 
 bool Lisp_Node::is_Nill(Lisp_Node *s){
-    return s->s.Nill;
+    if(!s->s.tag && s->s.empty)
+        return true;
+    else
+        return false;
+
 }
 
 bool Lisp_Node::Nill(Lisp_Node *s){
-    s->s.Nill = true;
+    s->s.tag = false;
+    s->s.empty=true;
     s->right=NULL;
     s->s.bottom=NULL;
     return true;
@@ -87,14 +95,12 @@ bool Lisp_Node::Nill(Lisp_Node *s){
 bool Lisp_Node::atom(Lisp_Node *s){
     s->s.empty=true;
     s->s.tag = true;
-    s->s.Nill = false;
     s->right=NULL;
     s->s.bottom=NULL;
     return true;
 }
 bool Lisp_Node::atom_sign(Lisp_Node *s,char ch){
     s->s.tag = true;
-    s->s.Nill = false;
     s->s.empty=false;
     s->s.sign_check=true;
     s->s.sign=ch;
@@ -117,7 +123,6 @@ bool Lisp_Node::isAtom_sign(Lisp_Node *s){
 }
 bool Lisp_Node::atom_num(Lisp_Node *s,int num){
     s->s.tag = true;
-    s->s.Nill = false;
     s->s.empty=false;
     s->s.sign_check=false;
     s->s.num=num;
