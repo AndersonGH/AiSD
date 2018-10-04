@@ -22,13 +22,13 @@ int main(int argc, char* argv[]){
         lisp.create_lisp(len_in,in,lisp); // метод класса lisp для создания иерархического списка
         bool check = true;
 
-        if(lisp.root->isAtom_num(lisp.root)){
-                std::cout << "Incorrect expression" << std::endl << std::endl;
-				 return 0;
-        }
-        else{
-            syntax_check(lisp.root,check);
-        }
+        if(lisp.root->isAtom_num(lisp.root))
+            check = false;
+
+
+
+        syntax_check(lisp.root,check);
+
         if(check)
             std::cout << "Correct" << std::endl << std::endl;
         else

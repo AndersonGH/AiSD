@@ -51,6 +51,13 @@ void syntax_check(class Lisp_Node *node,bool &check){
 
     }
 
+    if(node->right == NULL){
+        if(node->is_pair(node) || node->is_Nill(node))
+            check = false;
+        else if(!node->isAtom_num(node))
+            check = false;
+    }
+
     if(node->is_pair(node) && node->s.bottom!=NULL){
         if(node->s.bottom->is_Nill(node->s.bottom)){
             Lisp_Node * nill;
