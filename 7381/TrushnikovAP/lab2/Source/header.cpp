@@ -77,14 +77,12 @@ void syntax_check(class Lisp_Node *node,bool &check){
     return;
 }
 
-bool paste_node(class Lisp_Node *pred,class Lisp_Node *paste){
+void paste_node(class Lisp_Node *pred,class Lisp_Node *paste){
 
     class Lisp_Node *copy = new Lisp_Node;
     copy=pred->right;
     pred->right=paste;
     paste->right=copy;
-
-    return true;
 }
 
 
@@ -222,16 +220,16 @@ bool input(int argc, char* argv[],char **in,int &len){
        return false;
    return true;
 }
-int isSign(char ch){
+bool isSign(char ch){
     if(ch=='+' || ch == '-' || ch == '/' || ch == '*')
-        return 1;
+        return true;
     else
-        return 0;
+        return false;
 }
-int check_for_number(char ch){
+bool check_for_number(char ch){
     if((isdigit(ch)) || (isSign(ch) && std::cin.peek() != ' ' &&std::cin.peek() != '\n')
        && std::cin.peek()!='(' && std::cin.peek() != ')')
-        return 1;
+        return true;
 
-    return 0;
+    return false;
 }

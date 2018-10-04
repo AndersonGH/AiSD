@@ -6,10 +6,10 @@ class Lisp{
 public:
     class Lisp_Node *root;
     bool create_lisp(int len,char **in,class Lisp &lisp);
-    bool insert_atom_num(class Lisp_Node *father,int num);
-    bool create_temp(char ch,std::stack <class Lisp_Node *> &fathers,int &level,class Lisp_Node *father);
-    bool insert_atom_sign(class Lisp_Node *father,char sign);
-    bool insert_nill(class Lisp_Node *father);
+    void insert_atom_num(class Lisp_Node *father,int num);
+    void create_temp(char ch,std::stack <class Lisp_Node *> &fathers,int &level,class Lisp_Node *father);
+    void insert_atom_sign(class Lisp_Node *father,char sign);
+    void insert_nill(class Lisp_Node *father);
 };
 
 class Lisp_Node{
@@ -26,16 +26,16 @@ public:
     class Lisp_Node *right;
     s_expr s;
 
-    bool creat_pair(Lisp_Node *s); // метод для создания pair
-    bool atom(Lisp_Node *s);       // создает пустой атом
-    bool atom_sign(Lisp_Node *s,char ch); // делает  атом атомом знака
-    bool atom_num(Lisp_Node *s,int num); // делает  атом атомом числа
+    void creat_pair(Lisp_Node *s); // метод для создания pair
+    void atom(Lisp_Node *s);       // создает пустой атом
+    void atom_sign(Lisp_Node *s,char ch); // делает  атом атомом знака
+    void atom_num(Lisp_Node *s,int num); // делает  атом атомом числа
     bool isAtom (Lisp_Node *s);          // возвращает true если это атом
     bool isEmptyAtom (Lisp_Node *s);    // возвращает true если это пустой атом
     bool isAtom_sign (Lisp_Node *s);   // возвращает true если это атом знака
     bool isAtom_num (Lisp_Node *s);    // возвращает true если это атом числа
     bool is_pair(Lisp_Node *s);        // возвращает true если это pair
-    bool Nill(Lisp_Node *s);          //  делает  атом Nill
+    void Nill(Lisp_Node *s);          //  делает  атом Nill
     bool is_Nill(Lisp_Node *s);         // возвращает true если это Nill
 
     friend Lisp;
