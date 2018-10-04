@@ -1,19 +1,7 @@
 #include <iostream>
 #ifndef LISP_H
 #define LISP_H
-
-/*
-class lisp
-{
-public:
-    lisp();
-};
-*/
-
-
 class Lisp{
-
-
 public:
     class Lisp_Node *root;
     bool create_lisp(int len,char **in,class Lisp &lisp);
