@@ -7,9 +7,7 @@ void numTostr(int num, char *str){
     int divider=1;
 
     if(num>9)
-        while(1){
-            if(num/10 == 0)
-                break;
+        while(num/divider!=1){
             divider*=10;
         }
 
