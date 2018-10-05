@@ -28,7 +28,6 @@ bool Lisp::create_lisp(int len,char **in,class Lisp &lisp){
             continue;
 
         }
-
         else
             father = fathers.top();
 
@@ -77,17 +76,37 @@ void Lisp::insert_atom_sign(class Lisp_Node *father,char sign){
     if(father->isEmptyAtom(father) && !father->is_Nill(father))
         father->atom_sign(father,sign);
     else{
-        while(father->right!=NULL)
-            father=father->right;
+
+        if(father->is_Nill(father)){
+
+        Lisp_Node * check = father;
+        while(check->right!=NULL)
+            check=check->right;
 
         class Lisp_Node *node = new Lisp_Node;
         node->atom_sign(node,sign);
-        father->right=node;
+        father = check;
+        check->right=node;
+        }
+        else{
+            while(father->right!=NULL)
+                father=father->right;
+
+            class Lisp_Node *node = new Lisp_Node;
+            node->atom_sign(node,sign);
+            father->right=node;
+        }
+
+
+
     }
+
 }
 
 bool Lisp_Node::is_pair(Lisp_Node *s){
-    return !s->s.tag;
+    if(!s->s.tag && !s->s.empty)
+        return true;
+    return false;
 }
 
 void Lisp::create_temp(char ch,std::stack <class Lisp_Node *> &fathers,int &level,class Lisp_Node *father){
@@ -99,10 +118,12 @@ void Lisp::create_temp(char ch,std::stack <class Lisp_Node *> &fathers,int &leve
         if(level - 1 !=0)
             node->creat_pair(node);
 
-        if(father->right!=NULL && father->s.tag== true){
+        if(father->is_Nill(father)&&father->right!=NULL)
+            father=father->right;
+        if(father->right!=NULL){
             paste_node(father,node);
-
         }
+
         else {
             while(father->right!=NULL)
                 father=father->right;
@@ -188,7 +209,9 @@ bool Lisp_Node::isEmptyAtom(Lisp_Node *s){
 }
 
 bool Lisp_Node::isAtom_sign(Lisp_Node *s){
-     return s->s.sign_check;
+    if(s->s.sign_check && !s->s.empty && s->s.tag)
+        return true;
+    return false;
 }
 
 void Lisp_Node::atom_num(Lisp_Node *s,int num){

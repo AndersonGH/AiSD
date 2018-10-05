@@ -7,7 +7,9 @@ void numTostr(int num, char *str){
     int divider=1;
 
     if(num>9)
-        while(num/divider!=1){
+        while(1){
+            if(num/10 == 0)
+                break;
             divider*=10;
         }
 
@@ -51,31 +53,27 @@ void syntax_check(class Lisp_Node *node,bool &check){
 
     }
 
-    if(node->right == NULL){
-        if(node->is_pair(node) || node->is_Nill(node))
-            check = false;
-        else if(!node->isAtom_num(node))
-            check = false;
-    }
-
-    if(node->is_pair(node) && node->s.bottom!=NULL){
-        if(node->s.bottom->is_Nill(node->s.bottom)){
-            Lisp_Node * nill;
-            nill = node->s.bottom;
-            if(nill->right !=NULL)
-                while(nill->right->is_Nill(nill->right))
-                    nill=nill->right;
-
-            if(nill->right!=NULL)
-                if(nill->right->isAtom_num(nill->right))
-                    check = false;
-        }
-        else{
-            if(node->s.bottom->isAtom_num(node->s.bottom))
+    if(node->isAtom_sign(node) && !node->is_pair(node)){
+        Lisp_Node *error = node;
+        bool check_num = true;
+        while(error->right!=NULL){
+            if(error->right->isAtom_num(error->right))
+                check_num =false;
+            if(error->right->isAtom_sign(error->right)){
                 check = false;
+                break;
+            }
+
+        error = error->right;
         }
 
+        if(check_num)
+            check = false;
     }
+
+    if(node->right == NULL)
+        if(node->is_pair(node))
+            check = false;
 
     syntax_check(node->s.bottom,check);
     syntax_check(node->right,check);
@@ -176,8 +174,6 @@ bool input(int argc, char* argv[],char **in,int &len){
                 strcpy(in[i],str);
                 in[i][strlen(in[i])] = '\0';
                 i++;
-
-
 
                 if(std::cin.peek() == '\n'){
                     len = i;

@@ -22,10 +22,14 @@ int main(int argc, char* argv[]){
         lisp.create_lisp(len_in,in,lisp); // метод класса lisp для создания иерархического списка
         bool check = true;
 
-        if(lisp.root->isAtom_num(lisp.root))
+        Lisp_Node *node = lisp.root;
+
+        if(node->is_Nill(node))
+            while(node->is_Nill(node))
+                node = node->right;
+
+        if(node->isAtom_num(node))
             check = false;
-
-
 
         syntax_check(lisp.root,check);
 
