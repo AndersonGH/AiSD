@@ -5,12 +5,15 @@
 void numTostr(int num, char *str){
     int i =0;
     int divider=1;
-
-    if(num>9)
-        while(num/divider!=1){
+    int count = 1;
+    if(num>9){
+        while(count !=0){
             divider*=10;
-        }
+            count = num/divider;
 
+        }
+    divider/=10;
+    }
     while(divider!=0){
         int res;
         res = num/divider;
