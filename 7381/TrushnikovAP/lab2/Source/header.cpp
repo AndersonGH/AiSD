@@ -63,10 +63,19 @@ void syntax_check(class Lisp_Node *node,bool &check){//функция для п�
             Lisp_Node *error = node;
             while(error != NULL){
                 if(error->isAtom_num(error) && error->s.num == 0){
-                    check = false;
-                    break;
+                    error = error->right;
+                    while (error != NULL) {
+                        if(error->isAtom_num(error)){
+                            check = false;
+                            break;
+                        }
+                        error = error->right;
+                    }
                 }
-                error = error->right;
+                if(check && error)
+                    error = error->right;
+                else
+                    break;
             }
 
         }
