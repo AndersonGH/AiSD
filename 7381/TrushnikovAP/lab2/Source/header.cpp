@@ -218,7 +218,7 @@
              }
          }
     }
-   if(check_for_brackets)
+   if(check_for_brackets && len > 1)
        return false;
    return true;
 }
