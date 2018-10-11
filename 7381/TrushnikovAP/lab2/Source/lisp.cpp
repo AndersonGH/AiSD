@@ -20,7 +20,7 @@
         char ch=' ';
         if(len == 1 && i == -1)
             break;
-        if(i == 0 && len > 1)
+        if(i <= 0 && len > 1)
             break;
         while(i>0){
             ch = in[i][0];
