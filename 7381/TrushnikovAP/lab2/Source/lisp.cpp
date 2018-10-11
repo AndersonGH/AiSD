@@ -18,34 +18,64 @@
     class Lisp_Node * father;
     while(1){
         char ch=' ';
+        if(len == 1 && i == -1)
+            break;
+        if(i == 0 && len > 1)
+            break;
         while(i>0){
-             ch = in[i][0];
-            if(in[i][1] != '\0')
-                ch = in[i][1];
-             i--;
+            ch = in[i][0];
+                if(in[i][1] != '\0')
+                    ch = in[i][1];
+            i--;
             break;
         }
-        if(i==0)
-            break;
-         if(i==len-2){
+        if(len == 1){
+            ch = in[i][0];
+                if(in[i][1] != '\0')
+                    ch = in[i][1];
+            i--;
+        }
+
+        if(len == 1){
+            class Lisp_Node * node = new Lisp_Node;
+            node->atom(node);
+            lisp.root = node;
+            level++;
+            father = node;
+            if(isdigit(ch)){ // если считано число вставляем его
+                int num = atoi(in[i+1]);
+                std::cout << "Insert atom num: " << num << std::endl;
+                lisp.insert_atom_num(father,num);
+            }
+            else if(isSign(ch)){ // если считан знак встваляем
+                std::cout << "Insert atom sign " << ch << std::endl;
+                lisp.insert_atom_sign(father,ch);
+            }
+            continue;
+        }
+
+        else if(i==len-2 ){
             class Lisp_Node * node = new Lisp_Node;
             node->atom(node);
             lisp.root = node;
             level++;
             fathers.push(node);
-            if(len > 3)// выполнится если в ариф выражении компонетов больше одного
+            if(len > 2)// выполнится если в ариф выражении компонетов больше одного
                 continue;
             else
                 father = fathers.top();
 
          }
-        else
+         else
             father = fathers.top();
-         if(in[i][0] =='(' && ch == ')'){ // проверяем явлестя ли данный компонет Nill
+
+
+        if(in[i][0] =='(' && ch == ')'){ // проверяем явлестя ли данный компонет Nill
             i--;
             std::cout << "Insert Nill" << std::endl;
             lisp.insert_nill(father);
         }
+
         else if(ch==')' || ch == '('){ // если это откр или заркр скобка создаем либо pair и атом либо просто атом
             lisp.create_temp(ch,fathers,level,father);
         }

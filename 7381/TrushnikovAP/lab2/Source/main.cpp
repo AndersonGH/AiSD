@@ -25,9 +25,17 @@
             if(node->isAtom_num(node))//если первый атом число - выражение арифметическое некорректно
                 check = false;
         }
-        if(len_in == 4 )// если кол во элементов равно 4 значит это либо (знак) либо (число), что некорректно
+        if(len_in == 1){
+            if(lisp.root->isAtom_sign(lisp.root))
+                check = false;
+            else
+                check = true;
+        }
+        if(len_in == 3 )// если кол во элементов равно 3 значит это либо (знак) либо (число), что некорректно
             check = false;
+
          syntax_check(lisp.root,check);//вызов функции проверки на корректность иерархического списка
+
          if(check)
             std::cout << "Correct" << std::endl << std::endl;
         else
