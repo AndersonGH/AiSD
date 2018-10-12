@@ -9,9 +9,10 @@ int main(int argc, char* argv[]){
     input(argc,argv,in);// вызов функции считывания входящей строки
 
     if(checkform(pos,in))
-        std::cout<< "Correct" << std::endl;//вывод сообщения в консоль, если формула корректна
+        std::cout<< "*********** Correct  ***********" << std::endl;//вывод сообщения в консоль, если формула корректна
     else{
-        std::cout<< "Incorrect: " ; //вывод сообщения в консоль, если формула некорректна
+        std::cout<< " *********** Incorrect: " ; //вывод сообщения в консоль, если формула некорректна
+
         std::vector<int> :: iterator it;
         sort(pos.begin(), pos.end()); // сортирум вектор
         it = unique(pos.begin(), pos.end()); // удаляем повторяющиеся элементы
@@ -19,9 +20,9 @@ int main(int argc, char* argv[]){
 
         for(int  i = 0; i < pos.size(); i++)//вывод сообщения в консоль с номерами ошибочных позиций
             std::cout << pos[i] << " ";
-
+        std::cout << " ***********";
     }
-	std::cout << std::endl;
+    std::cout << std::endl<< std::endl;
 	delete []in;
     return 0;
 }

@@ -9,8 +9,10 @@ void input(int argc, char* argv[],char * &in){
         in = new char[len];
 		int i;
         for(i = 0; i + 1 < argc; i++){ // копируем данные из argv в in
-            if(i==len)
-                resize(in,len);			
+            if(i==len-1){
+                in[len-1] = '\0';
+                resize(in,len);
+            }
             in[i] = argv[i+1][0];
         }
 		in[i]= '\0';				
@@ -21,8 +23,10 @@ void input(int argc, char* argv[],char * &in){
         int i =0;
         char ch;
         while(1){
-            if(i == len)
+            if(i==len-1){
+                in[len-1] = '\0';
                 resize(in,len);
+            }
             if(std::cin.peek() == '\n') // считываем пока не встретим символ конца строки
                 break;
 
@@ -55,93 +59,101 @@ bool checkform(std::vector<int> &pos, char * &in){
 
     while(1){
         if(i == strlen(in)){
-            if(Mystack.empty()){
-                while(Mystack.size_s() > 1)// если в стеке больше одного символа очищаем его пока не осстанется один
-                    Mystack.pop();
-                if(!Cl_bracket(Mystack.top()) && !isName(Mystack.top())){// если на верине стека лежит не закрывающая скобка
-                    pos.push_back(i);								     // и не имя то формула некорректна
-                    check = false;
+            if(!Mystack.empty()){
+             while(Mystack.size_s() > 1)// очищаем стек пока в нем не останется один элемент
+                std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
+
+             if(!Cl_bracket(Mystack.top()) && !isName(Mystack.top())){// если на верине стека лежит не закрывающая скобка
+                 std::cout << "In the end must be bracket" << std::endl;
+                 pos.push_back(i);								     // и не имя то формула некорректна
+                 check = false;
                 }
             }
+            std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
+            Mystack.print();
             break;
         }
         ch = in[i];
+        std::cout << "Counted: " <<  ch << std::endl;
+        Mystack.print();
         i++;
 
-        if(O_bracket(Mystack.top())) // если на вершине стека лежит открывающая скобка
-            if(Cl_bracket(ch) || isSign(ch)){// а считанный символ закрывающая скобка
+        if(isName(ch)){// если считано имя
+            if(Cl_bracket(Mystack.top())){// если на вершине стека лежит закрывающая скобка
+                std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
+                pos.push_back(i); // формула неккоректна записаваем положение символа
                 check = false;
-                pos.push_back(i);			// то формула некорректна записываем номер некорректной позиции
+                if(!Mystack.empty())
+                    std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
             }
-        if(isSign(ch))// если считан знак
-            if(O_bracket(Mystack.top())){// если на вершине стека лежит откр скобка
-                pos.push_back(i);			// то формула некорректна записываем номер некорректной позиции
+            if(isSign(Mystack.top()))// если на вершине стека лежит знак попаем элемент из вершины стека
+                if(!Mystack.empty())
+                    std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
+
+            Mystack.push(ch); //кладем считанный элемент в стек
+            std::cout << "Push to Stack: " << ch << std::endl;
+
+        }
+        if(isSign(ch)){// если считан знак
+            if(!Cl_bracket(Mystack.top()) && !isName(Mystack.top())){// и на вершине стека лежит открывающая скобка
+                std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
+                pos.push_back(i);// формула неккоректна записаваем положение символа
                 check = false;
+
+            }
+            else{
+                if(!Mystack.empty())// попаем элемент из вершины стека
+                    std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
+
+                Mystack.push(ch);//кладем считанный элемент в стек
+                std::cout << "Push to Stack: " << ch << std::endl;
             }
 
-        if(isSign(Mystack.top()) ){// если на вершине стека лежит знак
-            if(Cl_bracket(ch) || isSign(ch)){// и считанный символ незакрывающая скобка и знак
-                pos.push_back(i);			// то формула некорректна записываем номер некорректной позиции
+        }
+        if(O_bracket(ch)){//если считана открывающая скобка
+            if(Cl_bracket(Mystack.top())){//если на вершине стека лежит закрывающая скобка
+                std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
+                pos.push_back(i);// формула неккоректна записаваем положение символа
                 check = false;
-
+                if(!Mystack.empty()) // попоаем элемент с вершины стека
+                    std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
             }
-            Mystack.pop();
+            if(!O_bracket(Mystack.top()))// если на вершине стека
+                if(!Mystack.empty())
+                    std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
+
+            Mystack.push(ch);// кладем элемент в стек
+            std::cout << "Push to Stack: " << ch << std::endl;
         }
 
-
-
-        if(isName(Mystack.top())){// если на вершине стека лежит имя
-            if(!Cl_bracket(ch) && !isSign(ch)){// и считанный символ не незакрывающая скобка и не знак
-                check = false;					// то формула некорректна записываем номер некорректной позиции
-                pos.push_back(i);
-            }
-
-            if(isSign(ch)){ // если считан знак и на вершине стека не лежит закрывающая скобка и не лежит имя
-                if(Mystack.empty()){
-                    if(!Cl_bracket(Mystack.top()) && !isName(Mystack.top())){
-                        check = false;		// то формула некорректна записываем номер некорректной позиции
-                        pos.push_back(i);
-                        Mystack.pop();
-                    }
-                }
-                Mystack.pop();
-                Mystack.push(ch);
-            }
-            else if(O_bracket(ch)){// если считана открывающая скобка
+        if(Cl_bracket(ch)){//если считана закрывающая скобка
+            if(O_bracket(Mystack.top())){//если на вершине стека лежит открывающая скобка
                 check = false;
-                pos.push_back(i);// то формула некорректна записываем номер некорректной позиции
-                Mystack.pop();
+
+                pos.push_back(i);// формула неккоректна записаваем положение символа
+                if((ch == ')' && Mystack.top() =='(') ||
+                   (ch == '}' && Mystack.top() =='{') ||
+                   (ch == ']' && Mystack.top() =='['))
+                    std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
             }
-            else
-                Mystack.pop();
-        }
-        if(Cl_bracket(Mystack.top())){ // если на вершине стека лежит закрывающая скобка
-            if(!Cl_bracket(ch) && !isSign(ch)){// и считанный символ не незакрывающая скобка и не знак
-                check = false;					// то формула некорректна записываем номер некорректной позиции
-                pos.push_back(i);
-                Mystack.pop();
+            else{
+                if(!Mystack.empty())// попаем элемень из стека
+                    std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
             }
-            Mystack.pop();
-        }
-
-        if(isName(ch))
-            Mystack.push(ch);
-
-        if(O_bracket(ch))
-            Mystack.push(ch);
-
-        if(Cl_bracket(ch)){ // если считана закрывающая скобка и на вершине стека не лежит соотв закрыв скобка
-           if((ch == ')' && Mystack.top() !='(') ||
-            (ch == '}' && Mystack.top() !='{') ||
-            (ch == ']' && Mystack.top() !='[')){
-                check = false;// то формула некорректна записываем номер некорректной позиции
-
-                pos.push_back(i);
-                Mystack.pop();
+            if((ch == ')' && Mystack.top() !='(') || // если открывающей скобке не соответсвует нужная скобка на вершине стека
+               (ch == '}' && Mystack.top() !='{') ||
+               (ch == ']' && Mystack.top() !='[')){
+                std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
+                check = false;
+                pos.push_back(i);// формула неккоректна записаваем положение символа
             }
-           Mystack.pop();
-           Mystack.push(ch);
+            if(!Mystack.empty())// попаем элемент из стека
+                std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
+            Mystack.push(ch);// кладем считанный элемент в стек
+            std::cout << "Push to Stack: " << ch << std::endl;
+
         }
+
 
 
     }
