@@ -13,6 +13,7 @@ void input(int argc, char* argv[],char * &in){
                 in[len-1] = '\0';
                 resize(in,len);
             }
+
             in[i] = argv[i+1][0];
         }
 		in[i]= '\0';				
@@ -77,6 +78,12 @@ bool checkform(std::vector<int> &pos, char * &in){
         std::cout << "Counted: " <<  ch << std::endl;
         Mystack.print();
         i++;
+
+        if(!isSign(ch) && !isName(ch) && !O_bracket(ch) && !Cl_bracket(ch)){
+            std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
+            pos.push_back(i); // формула неккоректна записаваем положение символа
+            check = false;
+        }
 
         if(isName(ch)){// если считано имя
             if(Cl_bracket(Mystack.top())){// если на вершине стека лежит закрывающая скобка
