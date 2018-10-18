@@ -54,6 +54,7 @@ void resize(char * &str, int &len){
 
 bool checkform(std::vector<int> &pos, char * &in){
     mystack Mystack;
+	int old_poz = 0;
     char ch;
     int i = 0;
     bool check = true;
@@ -64,9 +65,9 @@ bool checkform(std::vector<int> &pos, char * &in){
              while(Mystack.size_s() > 1)// очищаем стек пока в нем не останется один элемент
                 std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
 
-             if(!Cl_bracket(Mystack.top()) && !isName(Mystack.top())){// если на верине стека лежит не закрывающая скобка
+             if(!Cl_bracket(Mystack.top()) && !isName(Mystack.top()) && !isdigit(in[i-1])){// если на верине стека лежит не закрывающая скобка
                  std::cout << "In the end must be bracket" << std::endl;
-                 pos.push_back(i);								     // и не имя то формула некорректна
+                 pos.push_back(i-old_poz);								     // и не имя то формула некорректна
                  check = false;
                 }
             }
@@ -74,21 +75,29 @@ bool checkform(std::vector<int> &pos, char * &in){
             Mystack.print();
             break;
         }
+		if(isdigit(ch))
+            while(isdigit(in[i])){
+                old_poz++;
+				i++;
+			}
+
+		if(i == strlen(in))
+            continue;
         ch = in[i];
-        std::cout << "Counted: " <<  ch << std::endl;
+        std::cout << "Counted: " <<  ch << " i: " << i << std::endl;
         Mystack.print();
         i++;
 
         if(!isSign(ch) && !isName(ch) && !O_bracket(ch) && !Cl_bracket(ch)){
             std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
-            pos.push_back(i); // формула неккоректна записаваем положение символа
+            pos.push_back(i-old_poz); // формула неккоректна записаваем положение символа
             check = false;
         }
 
         if(isName(ch)){// если считано имя
             if(Cl_bracket(Mystack.top())){// если на вершине стека лежит закрывающая скобка
                 std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
-                pos.push_back(i); // формула неккоректна записаваем положение символа
+                pos.push_back(i-old_poz); // формула неккоректна записаваем положение символа
                 check = false;
                 if(!Mystack.empty())
                     std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
@@ -102,12 +111,19 @@ bool checkform(std::vector<int> &pos, char * &in){
 
         }
         if(isSign(ch)){// если считан знак
-            if(!Cl_bracket(Mystack.top()) && !isName(Mystack.top())){// и на вершине стека лежит открывающая скобка
+            if(isSign(Mystack.top())){// и на вершине стека лежит открывающая скобка
                 std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
-                pos.push_back(i);// формула неккоректна записаваем положение символа
+                pos.push_back(i-old_poz);// формула неккоректна записаваем положение символа
                 check = false;
 
             }
+			else if(O_bracket(Mystack.top())){
+				std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
+                pos.push_back(i-old_poz);// формула неккоректна записаваем положение символа
+                check = false;
+				Mystack.push(ch);//кладем считанный элемент в стек
+                std::cout << "Push to Stack: " << ch << std::endl;
+			}
             else{
                 if(!Mystack.empty())// попаем элемент из вершины стека
                     std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
@@ -118,9 +134,9 @@ bool checkform(std::vector<int> &pos, char * &in){
 
         }
         if(O_bracket(ch)){//если считана открывающая скобка
-            if(Cl_bracket(Mystack.top())){//если на вершине стека лежит закрывающая скобка
+            if(Cl_bracket(Mystack.top()) || isName(Mystack.top())){//если на вершине стека лежит закрывающая скобка
                 std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
-                pos.push_back(i);// формула неккоректна записаваем положение символа
+                pos.push_back(i-old_poz);// формула неккоректна записаваем положение символа
                 check = false;
                 if(!Mystack.empty()) // попоаем элемент с вершины стека
                     std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
@@ -137,7 +153,7 @@ bool checkform(std::vector<int> &pos, char * &in){
             if(O_bracket(Mystack.top())){//если на вершине стека лежит открывающая скобка
                 check = false;
 
-                pos.push_back(i);// формула неккоректна записаваем положение символа
+                pos.push_back(i-old_poz);// формула неккоректна записаваем положение символа
                 if((ch == ')' && Mystack.top() =='(') ||
                    (ch == '}' && Mystack.top() =='{') ||
                    (ch == ']' && Mystack.top() =='['))
@@ -152,7 +168,7 @@ bool checkform(std::vector<int> &pos, char * &in){
                (ch == ']' && Mystack.top() !='[')){
                 std::cout << "~~~~Incorrect symbol: " << ch << " ~~~~" << std::endl;
                 check = false;
-                pos.push_back(i);// формула неккоректна записаваем положение символа
+                pos.push_back(i-old_poz);// формула неккоректна записаваем положение символа
             }
             if(!Mystack.empty())// попаем элемент из стека
                 std::cout << "Pop from Stack: " << Mystack.pop() << std::endl;
