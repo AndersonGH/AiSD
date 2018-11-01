@@ -1,68 +1,44 @@
 #include <iostream>
-#include "stack.h"
 #include "header.h"
 #include "tree.h"
-#include <vector>
 
 
 int main(int argc, char* argv[]){
-    char **in;
-    char **postfix;
-    std::vector <tree <char> *> trees;
+    char *in;
+    char *postfix;
+    int tabs = 0;
     int first_len;
-    int second_len;
-
+    bool check_opened_br = true;
 
     try {
-        input(argc,argv,in,first_len,second_len);
+        input(argc,argv,in,first_len);
     } catch (MyException e) {
         std::cout << e.get_what() << std::endl;
-        for(int j =0; j < first_len; j++)
-            if(in[j])
-                delete [] in[j];
-
+        delete [] in;
         return 0;
     }
 
-    postfix = new char *[first_len];
-    for(int j =0; j < first_len; j++)
-        postfix[j] = nullptr;
 
+    postfix = new char[strlen(in)+1];
+    memset(postfix,'\0',strlen(in)+1);
+    tree <char> Tree;    
 
-
-    for(int j = 0 ; j < first_len; j++){
-        if(in[j]){
-            int tabs = 0;
-            tree <char> *Tree = new tree <char>;
-            trees.insert(trees.end(),Tree);
-            infix_to_postfix(in[j],postfix[j]);
-
-            size_t len = strlen(postfix[j])-1;
-            Tree->makeTree(postfix[j],len,Tree->get_root());
-            std::cout << std::endl;
-            Tree->print(tabs,Tree->get_root());
-        }
-    }
+    infix_to_postfix(in,postfix);
+    size_t len = strlen(postfix)-1;
+    Tree.makeTree(postfix,len,Tree.get_root());
     std::cout << std::endl;
-    for(int j = 0; j < first_len;j++){
-        if(in[j]){
-            std::cout  << "Infix: " << in[j];
-            std::cout  << " Postfix: " << postfix[j] << std::endl;
-        }
+    while(check_opened_br){
+        check_opened_br = false;
+        Tree.open_brackets(Tree.get_root(),check_opened_br);
     }
-
-
-    for(int j =0; j < first_len; j++){
-        if(in[j])
-            delete [] in[j];
-        if(postfix[j])
-            delete [] postfix[j];
-    }
-
-
-    for(size_t j = 0; j < trees.size();j++){
-        delete trees[j];
-    }
+    Tree.print(tabs,Tree.get_root());
+    std::cout << "\nFormula T:" << std::endl;
+    Tree.printF(Tree.get_root());
+    std::cout << "\nPrefix:" << std::endl;
+    Tree.prefix(Tree.get_root());
+    std::cout << "\nPostfix:" << std::endl;
+    Tree.postfix(Tree.get_root());
+    std::cout << std::endl;
 
     delete []postfix;
     delete []in;

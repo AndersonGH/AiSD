@@ -10,9 +10,6 @@ std::string MyException::get_what(){
 
 void infix_to_postfix(char*&in, char*&postfix){
     Array_stack stack;
-    postfix = new char[strlen(in)+1];
-    memset(postfix,'\0',strlen(in)+1);
-
     char ch,token;
     int i;
     size_t j=0;    //i-index of infix,j-index of postfix
@@ -45,8 +42,8 @@ void infix_to_postfix(char*&in, char*&postfix){
         else {
             try{
                 while((precedence(token) <= precedence(stack.top())) && !stack.empty() ){
-                    ch = stack.pop();
-                    postfix[j] = ch;
+                    ch = stack.pop();       //если важность токена на вершине стека больше чем важность считанного токе
+                    postfix[j] = ch;        // то достаем его из стека
                     j++;
                 }
             }catch(Underflow e){
@@ -67,78 +64,84 @@ void infix_to_postfix(char*&in, char*&postfix){
     postfix[j]='\0';
 }
 
+inline void check_input(int oper_count , int sign_count){
+    if((oper_count!=sign_count+1 || oper_count == 0 || sign_count == 0)){
+        if(oper_count == 0 && sign_count == 0)
+            throw MyException("Empty");
+        else if(oper_count == sign_count)
+            throw MyException("Too few operands");
+        else if(oper_count > 2*sign_count)
+            throw MyException("Too few signs");
+        else if(oper_count < 2*sign_count)
+            throw MyException("Too few operands");
+    }
+}
 
-void input(int argc, char* argv[],char ** &in, int &first_len, int &second_len){
+
+void input(int argc, char* argv[],char * &in, int &first_len){
     Array_stack brackets;
+    int oper_count = 0;
+    int sign_count = 0;
 
     if(argc > 1){ // выполгится, если данные переданы как аргументы строки
         first_len = argc-1;
-        second_len = FIRST_INPUT_SIZE;
-        int i,j=0,k = 0;
+        int i;
         char ch;
-        in = new char *[first_len];
+        in = new char [first_len];
 
-        for(int j =0; j < first_len; j++)
-            in[j] = nullptr;
 
-        for(i = 0, k = 0; k + 1 < argc; i++,k++){ // копируем данные из argv в in
-            ch = argv[k+1][0];
+        for(i = 0; i+1 < argc; i++){ // копируем данные из argv в in
+            ch = argv[i+1][0];
 
             if(ch == '('){
                 brackets.push('(');
             }
             else if(ch == ')'){
                 if(brackets.empty()){
+                    in[i] = '\0';
                     throw MyException("Incorrect brace placement");
                 }
                 if(brackets.top() == '(')
                      brackets.pop();
             }
 
+            if(isalnum(ch))
+                oper_count++;
 
-            if(ch == '|'){
-                j++;
-                continue;
+            if(ch == '*' || ch == '+' || ch == '-')
+                sign_count++;
+
+
+            if(i==first_len-1){
+                in[first_len-1] = '\0';
+                resize(in,first_len);
             }
-            if(in[j] == nullptr){
-                i=0;
-                second_len = FIRST_INPUT_SIZE;
-                in[j] = new char [second_len];
-                memset(in[j],'\0',second_len);
-            }
-            if(i==second_len-1){
-                in[j][second_len-1] = '\0';
-                resize1(in[j],second_len);
-            }
-            in[j][i] = ch;
+            in[i] = ch;
         }
+        in[i] = '\0';
         if(!brackets.empty())
             throw MyException("Incorrect brace placement");
+        if(oper_count==1 && sign_count==0)
+            return;
+        check_input(oper_count,sign_count);
     }
 
     else{
-        int i =0, j = 0;
-        first_len = FIRST_INPUT_SIZE;
-        in = new char* [first_len];
+
+        int i =0;
+        first_len = INPUT_SIZE;
+        in = new char [first_len];
         char ch;
 
-        for(int j =0; j < first_len; j++)
-            in[j] = nullptr;
-
-
         while(1){
-            if(in[j] == nullptr){
-                second_len = SECOND_INPUT_SIZE;
-                in[j] = new char [second_len];
-                memset(in[j],'\0',second_len);
+
+
+            if(i==first_len-1){
+                in[first_len-1] = '\0';
+                resize(in,first_len);
             }
 
-            if(i==second_len-1){
-                in[j][second_len-1] = '\0';
-                resize1(in[j],second_len);
-            }
-
-            std::cin >> std::noskipws >> ch;
+            std::cin >> ch;
             if(!check(ch))
                 throw MyException("Incorrect symbol");
 
@@ -147,39 +150,42 @@ void input(int argc, char* argv[],char ** &in, int &first_len, int &second_len){
             }
             else if(ch == ')'){
                 if(brackets.empty()){
+                    in[i] = '\0';
                     throw MyException("Incorrect brace placement");
                 }
                 if(brackets.top() == '(')
                      brackets.pop();
             }
+            if(isalnum(ch))
+                oper_count++;
+
+            if(ch == '*' || ch == '+' || ch == '-')
+                sign_count++;
 
 
 
-            if(ch == ' '){
-                in[j][i] = '\0';
-                j++;
-                if(j == first_len){
-                    in[j-1][second_len-1] = '\0';
-                    resize2(first_len,in);
-                }
-                i = 0;
-                continue;
-            }
-            if(ch == '\n'){
-                if(!brackets.empty())
+            in[i] = ch;
+            i++;
+            if(std::cin.peek() == '\n'){
+                if(!brackets.empty()){
+                    in[i] = '\0';
                     throw MyException("Incorrect brace placement");
+                }
                 break;
             }
-            in[j][i] = ch;
-            i++;
+
         }
-        in[j][i] = '\0';
+        in[i] = '\0';
+        if(oper_count==1 && sign_count==0)
+            return;
+        check_input(oper_count,sign_count);
     }
+
 
 
 }
 
-void resize1(char * &str, int &len){
+void resize(char * &str, int &len){
     char * copy = new char [len];
     strcpy(copy,str); // сохраняем данные перед выдлением памяти для in
     delete []str;
@@ -192,30 +198,7 @@ void resize1(char * &str, int &len){
 }
 
 
-void resize2(int &len,char ** &in){// функция увеличения размера двумерного массива
-   int l_copy = len;
-    char **copy = new char* [l_copy];
-    for(int i = 0;i<len;i++){
-       copy[i] = new char [strlen(in[i])+1];
-       strcpy(copy[i],in[i]);
-   }
-    for(int i = 0;i<len;i++){
-        delete [] in[i];
-   }
-   delete  [] in;
-   len=len*2;
-   in = new char* [len];
-   for(int i = 0;i<l_copy;i++){
-       in[i] = new char [strlen(copy[i])+1];
-       strcpy(in[i],copy[i]);
-   }
-   for(int i = len/2; i < len; i++)
-       in[i] = nullptr;
-   for(int i =0;i<l_copy;i++){
-       delete [] copy[i];
-   }
-   delete  [] copy;
-}
+
 int precedence(char ch){
     if(ch=='(')
         return 0;

@@ -22,16 +22,16 @@ public:
 };
 
 class Array_stack: public Stack{
-    char *data;
+    char *data;// данные стека
     size_t size;
-    size_t ontop;
+    size_t ontop;// индекс элемента, лежащего на верху стека
 public:
     Array_stack();
     ~Array_stack();
     void push(char ch);
     char pop();
     char top();
-    void resize();
+    void resize();// метод, увеличивающий размер стека
     bool empty();
 
 };
