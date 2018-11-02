@@ -228,7 +228,7 @@ template <typename T> void tree <T>::print(int &tabs,size_t tree){
                     //Который будет считать нам отступы для красивого вывода
  print(tabs,right(tree)); //Выведем ветку и ее подветки слева
  for (int i = 0; i<tabs; i++)
-     std::cout << " ";       //Потом отступы
+     std::cout << "    ";       //Потом отступы
 
  std::cout << tree_field(tree) << std::endl; //Данные этой ветки
  print(tabs,left(tree));//И ветки, что справа
