@@ -27,6 +27,7 @@ int main(int argc, char* argv[]){
     size_t len = strlen(postfix)-1;
     Tree.makeTree(postfix,len,Tree.get_root());
     Tree.print(tabs,Tree.get_root());
+    Tree.printF(Tree.get_root());
     std::cout << std::endl;
     while(check_opened_br){
         check_opened_br = false;
